@@ -7,11 +7,29 @@ class PokemonListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: Column(
-        children: [
-          PokemonCard(),
-        ],
-      )
+      body: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          children: [
+            SizedBox(height: 50),
+            PokemonCard(),
+          ],
+        ),
+      ),
     );
   }
+}
+
+class PokemonEntity {
+  final String id;
+  final String name;
+  final String image;
+  final String type;
+  
+  PokemonEntity({
+    required this.id,
+    required this.name,
+    required this.image,
+    required this.type,
+  });
 }

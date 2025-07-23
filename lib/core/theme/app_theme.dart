@@ -11,6 +11,8 @@ class AppTheme {
     colorSchemeSeed: colorSed,
     scaffoldBackgroundColor: scaffoldBackgroundColor,
 
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(),
+
     //* Textos
     textTheme: TextTheme(
       titleLarge: GoogleFonts.nunito().copyWith(
@@ -24,7 +26,7 @@ class AppTheme {
       titleSmall: GoogleFonts.nunito().copyWith(
         fontSize: 20,
       ),
-      bodyMedium: GoogleFonts.nunito().copyWith(
+      bodyMedium: GoogleFonts.poppins().copyWith(
         fontSize: 14,
       ),
     ),
