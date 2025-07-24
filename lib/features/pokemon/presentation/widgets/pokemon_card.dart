@@ -1,23 +1,52 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pokedex_app/features/pokemon/presentation/widgets/pokemon_type_chip.dart';
 
 class PokemonCard extends StatelessWidget {
-  const PokemonCard({super.key});
+  final String id;
+  final String name;
+  final String image;
+  final List<String> types;
+  final String backgroundColor;
+  final String typeIcon;
+  
+  const PokemonCard({
+    super.key,
+    required this.id,
+    required this.name,
+    required this.image,
+    required this.types,
+    required this.backgroundColor,
+    required this.typeIcon,
+  });
+
+  // Función para obtener el color de fondo 
+  Color getCardBackgroundColor() {
+    final primaryType = types.first.toLowerCase();
+    
+    switch (primaryType) {
+      case 'grama':
+        return const Color(0xFFEDF6EC);
+      case 'fuego':
+        return const Color(0xFFFCF3EB);
+      case 'agua':
+        return const Color(0xFFEBF1F8);
+      case 'eléctrico':
+        return const Color(0xFFFBF8E9);
+      default:
+        return const Color(0xFFEDF6EC);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final textStyle = Theme.of(context).textTheme;
+    final bgColor = Color(int.parse(backgroundColor));
+    
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFEDF6EC),
+        color: getCardBackgroundColor(),
         borderRadius: BorderRadius.circular(16),
-        // boxShadow: [
-        //   BoxShadow(
-        //     color: Colors.black
-        //   ),
-        //],
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -32,7 +61,7 @@ class PokemonCard extends StatelessWidget {
                   children: [
                     const SizedBox(height: 14),
                     Text(
-                      'N°001',
+                      'N°$id',
                       style: textStyle.bodyMedium?.copyWith(
                         fontSize: 12,
                         fontWeight: FontWeight.bold
@@ -40,19 +69,20 @@ class PokemonCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Bulbasaur',
+                      name,
                       style: textStyle.bodyMedium?.copyWith(
                         fontSize: 21,
                         fontWeight: FontWeight.bold
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Row(
-                      children: [
-                        PokemonTypeChip(),
-                        SizedBox(width: 6),
-                        PokemonTypeChip(),
-                      ],
+                    Row(
+                      children: types.map((type) => 
+                        Padding(
+                          padding: const EdgeInsets.only(right: 6),
+                          child: PokemonTypeChip(type: type),
+                        )
+                      ).toList(),
                     ),
                     const SizedBox(height: 14),
                   ],
@@ -67,16 +97,16 @@ class PokemonCard extends StatelessWidget {
                     height: 100,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
-                      color: const Color(0xFF63BC5A),
+                      color: bgColor,
                     ),
                     child: Stack(
                       children: [
                         Positioned.fill(
-                          child: SvgPicture.asset('assets/pokemons_types/hoja.svg'),
+                          child: SvgPicture.asset(typeIcon),
                         ),
                         Center(
                           child: Image.asset(
-                            'assets/pokemons/bulbasaur.png', 
+                            image, 
                             height: 94, 
                             width: 94
                           ),
