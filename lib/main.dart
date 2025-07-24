@@ -1,18 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pokedex_app/core/router/app_router.dart';
-import 'package:pokedex_app/core/theme/app_theme.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
+import 'dart:io';
+
+import 'core/router/app_router.dart';
+import 'core/theme/app_theme.dart';
 
 void main() {
-  runApp(const ProviderScope(child: PokedexApp()));
+  // Configurar para manejar certificados SSL
+  HttpOverrides.global = MyHttpOverrides();
+  
+  runApp(const ProviderScope(child: MyApp()));
 }
 
-class PokedexApp extends ConsumerWidget {
-  const PokedexApp({super.key});
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+  }
+}
+
+class MyApp extends ConsumerWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
+    
     return MaterialApp.router(
       title: 'Pokedex App',
       debugShowCheckedModeBanner: false,
