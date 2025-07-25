@@ -1,24 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pokedex_app/features/domain/entities/pokemon_entity.dart';
 import 'package:pokedex_app/features/pokemon/presentation/widgets/pokemon_type_chip.dart';
 
 class PokemonCard extends StatelessWidget {
-  final String id;
-  final String name;
-  final String image;
-  final List<String> types;
-  final String backgroundColor;
-  final String typeIcon;
-  
-  const PokemonCard({
-    super.key,
-    required this.id,
-    required this.name,
-    required this.image,
-    required this.types,
-    required this.backgroundColor,
-    required this.typeIcon,
-  });
+  final PokemonEntity pokemon;
+  const PokemonCard({super.key, required this.pokemon});
 
   // Función para obtener el color de fondo 
   Color getCardBackgroundColor() {
@@ -41,7 +28,6 @@ class PokemonCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textStyle = Theme.of(context).textTheme;
-    final bgColor = Color(int.parse(backgroundColor));
     
     return Container(
       decoration: BoxDecoration(
@@ -59,7 +45,7 @@ class PokemonCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 8),
                     Text(
                       'N°$id',
                       style: textStyle.bodyMedium?.copyWith(
@@ -76,7 +62,9 @@ class PokemonCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Row(
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
                       children: types.map((type) => 
                         Padding(
                           padding: const EdgeInsets.only(right: 6),
@@ -84,7 +72,7 @@ class PokemonCard extends StatelessWidget {
                         )
                       ).toList(),
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 8),
                   ],
                 ),
               ),
@@ -113,6 +101,20 @@ class PokemonCard extends StatelessWidget {
                         ),
                       ],
                     ),
+                  ),
+                  Positioned(
+                    top: 6,
+                    right: 8,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.3),
+                        shape: BoxShape.circle
+                      ),
+                      child: const Icon(
+                        Icons.favorite_border,
+                        color: Colors.white,
+                      ),
+                    ), 
                   ),
                 ],
               ),
