@@ -11,46 +11,46 @@ class PokemonListScreen extends StatelessWidget {
       name: 'Bulbasaur', 
       types: ['Hoja', 'Venenoso'],
       image: 'assets/pokemons/bulbasaur.png', 
-      backgroundColor: '',
     ),
     PokemonEntity(
       id: '002', 
       name: 'Charizard', 
       types: ['Fuego', 'Volador'],
       image: 'assets/pokemons/charizard.png', 
-      backgroundColor: '',
     ),
     PokemonEntity(
       id: '003', 
       name: 'Pikachu', 
       types: ['Eléctrico'],
       image: 'assets/pokemons/pikachu.png', 
-      backgroundColor: '',
     ),
     PokemonEntity(
       id: '004', 
       name: 'Squirtle', 
-      types: ['Agua'],
+      types: ['Agua', 'Normal'],
       image: 'assets/pokemons/squirtle.png', 
-      backgroundColor: '',
     )
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: pokemonList.length,
-          itemBuilder: (context, index) {
-            return PokemonCard(
-              pokemon: pokemonList[index],
-            );
-          },
+      body: 
+        Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: pokemonList.length,
+                itemBuilder: (context, index) {
+                  return PokemonCard(
+                    pokemon: pokemonList[index],
+                  );
+                },
+              ),
+            ),
+          ]
         ),
-      ),
-    );
+      );
+    }
   }
-}

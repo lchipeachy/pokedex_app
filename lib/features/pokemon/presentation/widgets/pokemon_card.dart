@@ -3,17 +3,35 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pokedex_app/features/domain/entities/pokemon_entity.dart';
 import 'package:pokedex_app/features/pokemon/presentation/widgets/pokemon_type_chip.dart';
 
-class PokemonCard extends StatelessWidget {
-  final PokemonEntity pokemon;
+class PokemonCard extends StatefulWidget {
+  final PokemonEntity pokemon;  
   const PokemonCard({super.key, required this.pokemon});
 
-  // Función para obtener el color de fondo 
-  Color getCardBackgroundColor() {
-    final primaryType = types.first.toLowerCase();
-    
-    switch (primaryType) {
-      case 'grama':
-        return const Color(0xFFEDF6EC);
+  @override
+  State<PokemonCard> createState() => _PokemonCardState();
+}
+
+class _PokemonCardState extends State<PokemonCard> {
+  bool isFavorite = false;
+  String _getIconType(String type) {
+    switch(type.toLowerCase()){
+      case 'hoja':
+        return 'hoja';
+      case 'fuego':
+        return 'fuego';
+      case 'agua':
+        return 'agua';
+      case 'eléctrico':
+        return 'electrico';
+      default:
+        return 'normal'; 
+    }
+  }
+
+  Color _getBackgroundColor(String type) {
+    switch(type.toLowerCase()){
+      case 'hoja':
+        return const Color(0XFFEDF6EC);
       case 'fuego':
         return const Color(0xFFFCF3EB);
       case 'agua':
@@ -21,17 +39,34 @@ class PokemonCard extends StatelessWidget {
       case 'eléctrico':
         return const Color(0xFFFBF8E9);
       default:
-        return const Color(0xFFEDF6EC);
+        return const Color(0xFFF1F2F3);
+    }
+  }
+
+  Color _getPrincipalColor(String type) {
+    switch(type.toLowerCase()){
+      case 'hoja':
+        return const Color(0XFF63BC5A);
+      case 'fuego':
+        return const Color(0xFFFF9D55);
+      case 'agua':
+        return const Color(0xFF5090D6);
+      case 'eléctrico':
+        return const Color(0xFFF4D23C);
+      default:
+        return const Color(0xFF919AA2);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final textStyle = Theme.of(context).textTheme;
-    
+    final pokemon = widget.pokemon;
+  
     return Container(
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: getCardBackgroundColor(),
+        color: _getBackgroundColor(pokemon.types[0]),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Padding(
@@ -41,38 +76,37 @@ class PokemonCard extends StatelessWidget {
             Expanded(
               flex: 2,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.only(left: 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 12),
                     Text(
-                      'N°$id',
+                      'N°${pokemon.id}',
                       style: textStyle.bodyMedium?.copyWith(
                         fontSize: 12,
                         fontWeight: FontWeight.bold
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 4),
                     Text(
-                      name,
+                      pokemon.name,
                       style: textStyle.bodyMedium?.copyWith(
                         fontSize: 21,
                         fontWeight: FontWeight.bold
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 12),
                     Wrap(
                       spacing: 8,
                       runSpacing: 4,
-                      children: types.map((type) => 
-                        Padding(
-                          padding: const EdgeInsets.only(right: 6),
-                          child: PokemonTypeChip(type: type),
-                        )
-                      ).toList(),
+                      children: pokemon.types.map((type) {
+                        return PokemonTypeChip(
+                          type: type,
+                        );
+                      }).toList()
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 14),
                   ],
                 ),
               ),
@@ -85,16 +119,18 @@ class PokemonCard extends StatelessWidget {
                     height: 100,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
-                      color: bgColor,
+                      color: _getPrincipalColor(pokemon.types[0]),
                     ),
                     child: Stack(
                       children: [
                         Positioned.fill(
-                          child: SvgPicture.asset(typeIcon),
+                          child: SvgPicture.asset(
+                            'assets/pokemons_types/${_getIconType(pokemon.types[0])}.svg'
+                          ),
                         ),
                         Center(
                           child: Image.asset(
-                            image, 
+                            pokemon.image, 
                             height: 94, 
                             width: 94
                           ),
@@ -105,16 +141,32 @@ class PokemonCard extends StatelessWidget {
                   Positioned(
                     top: 6,
                     right: 8,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.3),
-                        shape: BoxShape.circle
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          isFavorite = !isFavorite;
+                        });
+                      },
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.3),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 2,
+                          ),
+                        ),
+                        child: Center(
+                          child: Icon(
+                            isFavorite ? Icons.favorite : Icons.favorite_border, 
+                            color: isFavorite ? Colors.red : Colors.white,
+                            size: 16,
+                          ),
+                        ),
                       ),
-                      child: const Icon(
-                        Icons.favorite_border,
-                        color: Colors.white,
-                      ),
-                    ), 
+                    ),
                   ),
                 ],
               ),
