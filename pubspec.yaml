@@ -33,4 +33,5 @@ flutter:
     - assets/icons/
     - assets/pokemons/
     - assets/pokemons_types/
+    - assets/pokemons_types_chips/
     - assets/habilities/
