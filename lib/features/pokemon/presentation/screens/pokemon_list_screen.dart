@@ -1,9 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex_app/features/domain/entities/pokemon_entity.dart';
 import 'package:pokedex_app/features/pokemon/presentation/widgets/pokemon_card.dart';
+import 'package:pokedex_app/features/pokemon/presentation/widgets/search_bar_widget.dart';
+import 'package:pokedex_app/features/pokemon/presentation/widgets/filter_button_widget.dart';
+import 'package:pokedex_app/features/pokemon/presentation/widgets/type_filter_bottom_sheet.dart';
 
-class PokemonListScreen extends StatelessWidget {
-  PokemonListScreen({super.key});
+class PokemonListScreen extends StatefulWidget {
+  const PokemonListScreen({super.key});
+
+  @override
+  State<PokemonListScreen> createState() => _PokemonListScreenState();
+}
+
+class _PokemonListScreenState extends State<PokemonListScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  String _selectedType = 'Todos los tipos';
+  String _selectedSort = 'Menor número';
 
   final List<PokemonEntity> pokemonList = [
     PokemonEntity(
@@ -32,12 +44,150 @@ class PokemonListScreen extends StatelessWidget {
     )
   ];
 
+  void _showTypeFilterBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        minChildSize: 0.5,
+        maxChildSize: 0.9,
+        builder: (context, scrollController) => SingleChildScrollView(
+          controller: scrollController,
+          child: TypeFilterBottomSheet(
+            onTypeSelected: (String type) {
+              setState(() {
+                _selectedType = type;
+              });
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showSortBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+      ),
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Draggable indicator
+          Container(
+            margin: const EdgeInsets.only(top: 12),
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          // Title
+          Container(
+            padding: const EdgeInsets.all(20),
+            child: const Center(
+              child: Text(
+                'Selecciona una opción',
+                style: TextStyle(
+                  color: Color(0xFF000000),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          // Sort options
+          _buildSortOption('Menor número'),
+          _buildSortOption('Mayor número'),
+          _buildSortOption('A-Z'),
+          _buildSortOption('Z-A'),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSortOption(String option) {
+    final textStyle = Theme.of(context).textTheme;
+    
+    return Builder(
+      builder: (context) => Container(
+        width: double.infinity,
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              setState(() {
+                _selectedSort = option;
+              });
+              Navigator.pop(context);
+            },
+            borderRadius: BorderRadius.circular(49),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF333333),
+                borderRadius: BorderRadius.circular(49),
+              ),
+              child: Text(
+                option,
+                style: textStyle.bodyLarge?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: 
-        Column(
+      backgroundColor: Colors.grey[50],
+      body: SafeArea(
+        child: Column(
           children: [
+            // Search Bar
+            SearchBarWidget(
+              controller: _searchController,
+              onChanged: (value) {
+                // Implementar búsqueda
+              },
+            ),
+            
+            // Filter Buttons
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                children: [
+                  FilterButtonWidget(
+                    text: _selectedType,
+                    onTap: _showTypeFilterBottomSheet,
+                  ),
+                  const SizedBox(width: 12),
+                  FilterButtonWidget(
+                    text: _selectedSort,
+                    onTap: _showSortBottomSheet,
+                  ),
+                ],
+              ),
+            ),
+            
+            // Pokemon List
             Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.all(16),
@@ -49,8 +199,15 @@ class PokemonListScreen extends StatelessWidget {
                 },
               ),
             ),
-          ]
+          ],
         ),
-      );
-    }
+      ),
+    );
   }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+}
