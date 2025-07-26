@@ -27,7 +27,7 @@ class PokemonListScreen extends StatelessWidget {
     PokemonEntity(
       id: '004', 
       name: 'Squirtle', 
-      types: ['Agua', 'Normal'],
+      types: ['Agua'],
       image: 'assets/pokemons/squirtle.png', 
     )
   ];
