@@ -17,7 +17,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/',
             name: 'home',
-            builder: (context, state) => PokemonListScreen()
+            builder: (context, state) => const PokemonListScreen()
           ),
         ],
       ),
