@@ -19,6 +19,7 @@ dependencies:
   go_router: ^13.2.0
   google_fonts: ^6.2.1
   http: ^1.1.0
+  flutter_dotenv: ^5.2.1
 
 dev_dependencies:
   flutter_test:
@@ -35,3 +36,4 @@ flutter:
     - assets/pokemons_types/
     - assets/pokemons_types_chips/
     - assets/habilities/
+    - .env

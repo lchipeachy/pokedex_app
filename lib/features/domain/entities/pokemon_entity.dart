@@ -10,6 +10,4 @@ class PokemonEntity {
     required this.types,
     required this.image,
   });
-
-  
 }

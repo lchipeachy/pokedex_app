@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
+import 'package:pokedex_app/core/constants/environments.dart';
 import 'dart:io';
 
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 
-void main() {
+void main() async{
+  await Environments.initEnvironment();
+  
   // Configurar para manejar certificados SSL
   HttpOverrides.global = MyHttpOverrides();
   
