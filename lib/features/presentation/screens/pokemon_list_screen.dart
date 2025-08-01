@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex_app/features/domain/entities/pokemon_entity.dart';
-import 'package:pokedex_app/features/pokemon/presentation/widgets/pokemon_card.dart';
-import 'package:pokedex_app/features/pokemon/presentation/widgets/search_bar_widget.dart';
-import 'package:pokedex_app/features/pokemon/presentation/widgets/filter_button_widget.dart';
-import 'package:pokedex_app/features/pokemon/presentation/widgets/type_filter_bottom_sheet.dart';
+import 'package:pokedex_app/features/presentation/widgets/pokemon_card.dart';
+import 'package:pokedex_app/features/presentation/widgets/search_bar_widget.dart';
+import 'package:pokedex_app/features/presentation/widgets/filter_button_widget.dart';
+import 'package:pokedex_app/features/presentation/widgets/type_filter_bottom_sheet.dart';
 
 class PokemonListScreen extends StatefulWidget {
   const PokemonListScreen({super.key});

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pokedex_app/features/domain/entities/pokemon_entity.dart';
-import 'package:pokedex_app/features/pokemon/presentation/widgets/pokemon_type_chip.dart';
+import 'package:pokedex_app/features/presentation/widgets/pokemon_type_chip.dart';
 
 class PokemonCard extends StatefulWidget {
   final PokemonEntity pokemon;  
