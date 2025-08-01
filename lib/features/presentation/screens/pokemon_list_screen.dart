@@ -1,18 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pokedex_app/features/domain/entities/pokemon_entity.dart';
+import 'package:pokedex_app/features/presentation/providers/pokemon_provider.dart';
 import 'package:pokedex_app/features/presentation/widgets/pokemon_card.dart';
 import 'package:pokedex_app/features/presentation/widgets/search_bar_widget.dart';
 import 'package:pokedex_app/features/presentation/widgets/filter_button_widget.dart';
 import 'package:pokedex_app/features/presentation/widgets/type_filter_bottom_sheet.dart';
 
-class PokemonListScreen extends StatefulWidget {
+
+/*
+ref.watch()
+
+ref.read()
+*/
+
+class PokemonListScreen extends ConsumerStatefulWidget {
   const PokemonListScreen({super.key});
 
   @override
-  State<PokemonListScreen> createState() => _PokemonListScreenState();
+  ConsumerState<PokemonListScreen> createState() => _PokemonListScreenState();
 }
 
-class _PokemonListScreenState extends State<PokemonListScreen> {
+class _PokemonListScreenState extends ConsumerState<PokemonListScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getPokemonList();
+    });
+  }
+
+  Future <void> getPokemonList() async{
+    await ref.read(pokemonProvider.notifier).getPokemonList();
+    final pokemonList = ref.read(pokemonProvider).pokemonList;
+    debugPrint('$pokemonList');
+  }
+
+
   final TextEditingController _searchController = TextEditingController();
   String _selectedType = 'Todos los tipos';
   String _selectedSort = 'Menor número';
