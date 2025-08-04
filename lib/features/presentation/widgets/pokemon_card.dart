@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pokedex_app/features/domain/entities/pokemon_entity.dart';
+import 'package:pokedex_app/features/domain/entities/pokemon_service_entity.dart';
 import 'package:pokedex_app/features/presentation/widgets/pokemon_type_chip.dart';
 
 class PokemonCard extends StatefulWidget {
-  final PokemonEntity pokemon;  
+  final PokemonServiceEntity pokemon;  
   const PokemonCard({super.key, required this.pokemon});
 
   @override
@@ -13,6 +13,40 @@ class PokemonCard extends StatefulWidget {
 
 class _PokemonCardState extends State<PokemonCard> {
   bool isFavorite = false;
+
+  String get _primaryType{
+    if(widget.pokemon.types.types.isEmpty) return 'normal';
+    return widget.pokemon.types.types.first.type.name;
+    
+  }
+
+  String get _pokemonImage {
+    final officialArtWork = widget.pokemon.sprites.other?.officialArtwork?.frontDefault;
+    if(officialArtWork != null && officialArtWork.isNotEmpty) {
+      return officialArtWork;
+    }
+    return widget.pokemon.sprites.frontDefault;
+  }
+
+  String _tralateType(String englishType) {
+    switch(englishType.toLowerCase()){
+      case 'grass':
+        return 'hoja';
+      case 'fire':
+        return 'fuego';
+      case 'water':
+        return 'agua';
+      case 'electric':
+        return 'eléctrico';
+      case 'poison':
+        return 'venenoso';
+      case 'flying':
+        return 'volador';
+      default:
+        return englishType; 
+    }
+  }
+
   String _getIconType(String type) {
     switch(type.toLowerCase()){
       case 'hoja':
@@ -66,7 +100,7 @@ class _PokemonCardState extends State<PokemonCard> {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: _getBackgroundColor(pokemon.types[0]),
+        color: _getBackgroundColor(_tralateType(_primaryType)),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Padding(
@@ -100,9 +134,9 @@ class _PokemonCardState extends State<PokemonCard> {
                     Wrap(
                       spacing: 8,
                       runSpacing: 4,
-                      children: pokemon.types.map((type) {
+                      children: pokemon.types.types.map((typeSlot) {
                         return PokemonTypeChip(
-                          type: type,
+                          type: _tralateType(typeSlot.type.name),
                         );
                       }).toList()
                     ),
@@ -119,18 +153,18 @@ class _PokemonCardState extends State<PokemonCard> {
                     height: 100,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
-                      color: _getPrincipalColor(pokemon.types[0]),
+                      color: _getPrincipalColor(_tralateType(_primaryType)),
                     ),
                     child: Stack(
                       children: [
                         Positioned.fill(
                           child: SvgPicture.asset(
-                            'assets/pokemons_types/${_getIconType(pokemon.types[0])}.svg'
+                            'assets/pokemons_types/${_getIconType(_primaryType)}.svg'
                           ),
                         ),
                         Center(
-                          child: Image.asset(
-                            pokemon.image, 
+                          child: Image.network(
+                            _pokemonImage, 
                             height: 94, 
                             width: 94
                           ),

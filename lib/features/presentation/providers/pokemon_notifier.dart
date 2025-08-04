@@ -55,4 +55,13 @@ class PokemonNotifier extends StateNotifier <PokemonState>{
       debugPrint('Error: $e');
     }
   }
+
+  Future<void> loadMorePokemon() async {
+    if(state.isLoadingMore || !state.hasMoreData) return;
+    await getPokemonList(isInitialLoad: false);
+  }
+
+  Future<void> refreshPokemonList() async {
+    await getPokemonList(isInitialLoad: true);
+  }
 }

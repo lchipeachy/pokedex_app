@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pokedex_app/features/domain/entities/pokemon_entity.dart';
 import 'package:pokedex_app/features/presentation/providers/pokemon_provider.dart';
+import 'package:pokedex_app/features/presentation/widgets/loading_widget.dart';
 import 'package:pokedex_app/features/presentation/widgets/pokemon_card.dart';
 import 'package:pokedex_app/features/presentation/widgets/search_bar_widget.dart';
 import 'package:pokedex_app/features/presentation/widgets/filter_button_widget.dart';
@@ -22,12 +23,15 @@ class PokemonListScreen extends ConsumerStatefulWidget {
 }
 
 class _PokemonListScreenState extends ConsumerState<PokemonListScreen> {
+  final ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getPokemonList();
     });
+    _scrollController.addListener(_onScroll);
   }
 
   Future <void> getPokemonList() async{
@@ -36,6 +40,11 @@ class _PokemonListScreenState extends ConsumerState<PokemonListScreen> {
     debugPrint('$pokemonList');
   }
 
+  void _onScroll() {
+    if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      ref.read(pokemonProvider.notifier).loadMorePokemon();
+    }
+  }
 
   final TextEditingController _searchController = TextEditingController();
   String _selectedType = 'Todos los tipos';
@@ -180,6 +189,8 @@ class _PokemonListScreenState extends ConsumerState<PokemonListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final pokemonState = ref.watch(pokemonProvider);
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       body: SafeArea(
@@ -213,14 +224,45 @@ class _PokemonListScreenState extends ConsumerState<PokemonListScreen> {
             
             // Pokemon List
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: pokemonList.length,
-                itemBuilder: (context, index) {
-                  return PokemonCard(
-                    pokemon: pokemonList[index],
-                  );
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  await ref.read(pokemonProvider.notifier).refreshPokemonList();
                 },
+                child: Builder(builder: (context) {
+                  //* Estado de carga
+                  if (pokemonState.isLoading && pokemonState.pokemonList.isEmpty) {
+                    return const LoadingWidget();
+                  }
+
+                  //* Determinar como se muestra la informacion
+                  List<dynamic> displayList = [];
+                  displayList = pokemonState.pokemonList;
+                  if(displayList.isEmpty && !pokemonState.isLoading) {
+                    return const Center(
+                      child: Text(
+                        'No hay pokemons disponibles',
+                        //style: TextStyle(fontSize: 18, color: Colors.grey),
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.all(16),
+                    itemCount: displayList.length + (pokemonState.isLoadingMore ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      if(index == displayList.length) {
+                        return const Center(
+                          child: CircularProgressIndicator(color: Color(0xFFCD3131)),
+                        );
+                      }
+                      final pokemon = displayList[index];
+                      return PokemonCard(
+                        pokemon: pokemon,
+                      );
+                    },
+                  );
+                })
               ),
             ),
           ],
