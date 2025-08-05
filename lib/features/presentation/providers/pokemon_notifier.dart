@@ -64,4 +64,47 @@ class PokemonNotifier extends StateNotifier <PokemonState>{
   Future<void> refreshPokemonList() async {
     await getPokemonList(isInitialLoad: true);
   }
+
+  //* Método para buscar Pokémon por query-string
+  Future<void> searchPokemon(String query) async {
+    if (query.trim().isEmpty) {
+      clearSearch();
+      return;
+    }
+
+    try {
+      state = state.copyWith(
+        isSearching: true,
+        searchQuery: query.trim(),
+        errorMessage: '',
+        hasError: false,
+      );
+
+      final searchResults = await repository.searchPokemonByQuery(query.trim());
+      
+      state = state.copyWith(
+        searchResults: searchResults,
+        isSearching: false,
+      );
+    } catch (e) {
+      debugPrint('Error en búsqueda: $e');
+      state = state.copyWith(
+        isSearching: false,
+        searchResults: [],
+        hasError: true,
+        errorMessage: 'Error al buscar Pokémon: $e',
+      );
+    }
+  }
+
+  //* Método para limpiar la búsqueda
+  void clearSearch() {
+    state = state.copyWith(
+      searchResults: [],
+      searchQuery: '',
+      isSearching: false,
+      errorMessage: '',
+      hasError: false,
+    );
+  }
 }

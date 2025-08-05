@@ -24,4 +24,9 @@ class PokemonRepositoryImpl implements PokemonRepository {
   Future<PokemonServiceEntity> getPokemonById(int id) async {
     return await pokemonDataSource.getPokemonById(id);
   }
+
+  @override
+  Future<List<PokemonServiceEntity>> searchPokemonByQuery(String query) async {
+    return await pokemonDataSource.searchPokemonByQuery(query);
+  }
 }

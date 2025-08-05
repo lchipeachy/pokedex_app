@@ -10,4 +10,7 @@ abstract class PokemonDataSource {
 
   //* Obtenemos un pokemon por su ID
   Future <PokemonServiceEntity> getPokemonById(int id);
+
+  //* Buscamos pokemones por query-string
+  Future<List<PokemonServiceEntity>> searchPokemonByQuery(String query);
 }

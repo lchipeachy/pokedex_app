@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:async';
 import 'package:pokedex_app/features/domain/entities/pokemon_entity.dart';
 import 'package:pokedex_app/features/presentation/providers/pokemon_provider.dart';
 import 'package:pokedex_app/features/presentation/widgets/loading_widget.dart';
@@ -7,7 +8,6 @@ import 'package:pokedex_app/features/presentation/widgets/pokemon_card.dart';
 import 'package:pokedex_app/features/presentation/widgets/search_bar_widget.dart';
 import 'package:pokedex_app/features/presentation/widgets/filter_button_widget.dart';
 import 'package:pokedex_app/features/presentation/widgets/type_filter_bottom_sheet.dart';
-
 
 /*
 ref.watch()
@@ -24,6 +24,7 @@ class PokemonListScreen extends ConsumerStatefulWidget {
 
 class _PokemonListScreenState extends ConsumerState<PokemonListScreen> {
   final ScrollController _scrollController = ScrollController();
+  Timer? _debounceTimer;
 
   @override
   void initState() {
@@ -44,6 +45,22 @@ class _PokemonListScreenState extends ConsumerState<PokemonListScreen> {
     if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
       ref.read(pokemonProvider.notifier).loadMorePokemon();
     }
+  }
+
+  //* Método para manejar la búsqueda
+  void _onSearchChanged(String query) {
+    _debounceTimer?.cancel();
+    
+    // Crear un nuevo timer
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      ref.read(pokemonProvider.notifier).searchPokemon(query);
+    });
+  }
+
+  //* Método para limpiar la búsqueda
+  void _clearSearch() {
+    _searchController.clear();
+    ref.read(pokemonProvider.notifier).clearSearch();
   }
 
   final TextEditingController _searchController = TextEditingController();
@@ -199,9 +216,7 @@ class _PokemonListScreenState extends ConsumerState<PokemonListScreen> {
             // Search Bar
             SearchBarWidget(
               controller: _searchController,
-              onChanged: (value) {
-                // Implementar búsqueda
-              },
+              onChanged: _onSearchChanged,
             ),
             
             // Filter Buttons
@@ -229,19 +244,56 @@ class _PokemonListScreenState extends ConsumerState<PokemonListScreen> {
                   await ref.read(pokemonProvider.notifier).refreshPokemonList();
                 },
                 child: Builder(builder: (context) {
-                  //* Estado de carga
+                  //* Estado de carga inicial
                   if (pokemonState.isLoading && pokemonState.pokemonList.isEmpty) {
                     return const LoadingWidget();
                   }
 
-                  //* Determinar como se muestra la informacion
-                  List<dynamic> displayList = [];
-                  displayList = pokemonState.pokemonList;
-                  if(displayList.isEmpty && !pokemonState.isLoading) {
+                  //* Estado de búsqueda
+                  if (pokemonState.isSearching) {
                     return const Center(
-                      child: Text(
-                        'No hay pokemons disponibles',
-                        //style: TextStyle(fontSize: 18, color: Colors.grey),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(color: Color(0xFFCD3131)),
+                          SizedBox(height: 16),
+                          Text('Buscando Pokémon...'),
+                        ],
+                      ),
+                    );
+                  }
+
+                  //* Mostrar lista de Pokémon
+                  final displayList = pokemonState.displayList;
+                  
+                  if(displayList.isEmpty && !pokemonState.isLoading) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.search_off,
+                            size: 64,
+                            color: Colors.grey[400],
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            pokemonState.isInSearchMode 
+                              ? 'No se encontraron Pokémon'
+                              : 'No hay pokemons disponibles',
+                            style: TextStyle(
+                              fontSize: 18, 
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          if (pokemonState.isInSearchMode) ...[
+                            const SizedBox(height: 8),
+                            TextButton(
+                              onPressed: _clearSearch,
+                              child: const Text('Limpiar búsqueda'),
+                            ),
+                          ],
+                        ],
                       ),
                     );
                   }
@@ -249,7 +301,7 @@ class _PokemonListScreenState extends ConsumerState<PokemonListScreen> {
                   return ListView.builder(
                     controller: _scrollController,
                     padding: const EdgeInsets.all(16),
-                    itemCount: displayList.length + (pokemonState.isLoadingMore ? 1 : 0),
+                    itemCount: displayList.length + (pokemonState.isLoadingMore && !pokemonState.isInSearchMode ? 1 : 0),
                     itemBuilder: (context, index) {
                       if(index == displayList.length) {
                         return const Center(
@@ -273,7 +325,9 @@ class _PokemonListScreenState extends ConsumerState<PokemonListScreen> {
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 }

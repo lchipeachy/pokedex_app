@@ -59,6 +59,49 @@ class PokemonDatasourceImpl implements PokemonDataSource{
     }
   }
 
+  @override
+  Future<List<PokemonServiceEntity>> searchPokemonByQuery(String query) async {
+    try {
+      final response = await dio.get('/pokemon', 
+        queryParameters: {
+          'limit': 1000, 
+        }
+      );
+
+      final results = response.data['results'] as List;
+      final List<PokemonServiceEntity> searchResults = [];
+      final String lowerQuery = query.toLowerCase();
+
+      // Filtrando los resultados
+      final matchingPokemon = results.where((pokemon) {
+        final name = pokemon['name'] as String;
+        return name.toLowerCase().contains(lowerQuery);
+      }).toList();
+
+      final limitedResults = matchingPokemon.take(20).toList();
+
+      for (final pokemon in limitedResults) {
+        try {
+          final pokemonUrl = pokemon['url'] as String;
+          final id = _extractIdFromUrl(pokemonUrl);
+          
+          final detailPokemonEntity = await getPokemonById(id);
+          searchResults.add(detailPokemonEntity);
+        } catch (e) {
+          debugPrint('Error obteniendo detalles del Pokémon: $e');
+          continue;
+        }
+      }
+
+      return searchResults;
+    } on DioException catch (e) {
+      throw _handleDioError(e, 'Error al buscar Pokémon con query: $query');
+    } catch (e) {
+      debugPrint('Error en búsqueda: $e');
+      throw Exception('Error inesperado en la búsqueda: $e');
+    }
+  }
+
   Exception _handleDioError(DioException e, String context) {
     switch(e.type) {
       case DioExceptionType.connectionTimeout:
