@@ -14,7 +14,7 @@ class PokemonDatasourceImpl implements PokemonDataSource{
   @override
   Future<List<PokemonServiceEntity>> getPokemonList({int offset = 0, int limit = 20}) async{
     try{
-      final response = await dio.get('',
+      final response = await dio.get('/pokemon',
       queryParameters: {
         'offset': offset,
         'limit': limit,

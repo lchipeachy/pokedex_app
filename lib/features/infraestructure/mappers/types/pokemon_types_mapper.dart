@@ -4,7 +4,7 @@ import 'package:pokedex_app/features/infraestructure/mappers/types/pokemon_type_
 class PokemonTypesMapper {
   static PokemonTypesEntity fromJson(Map<String, dynamic> json) {
     return PokemonTypesEntity(
-      types: (json['types'] as List)
+      types: (json['types'] as List<dynamic>)
           .map((e) => PokemonTypeSlotMapper.fromJson(e as Map<String, dynamic>))
           .toList(),
     );

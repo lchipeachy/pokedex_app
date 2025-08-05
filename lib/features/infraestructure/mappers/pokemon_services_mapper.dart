@@ -7,7 +7,7 @@ class PokemonServiceMapper {
     return PokemonServiceEntity(
       id: json['id'] as int,
       name: json['name'] as String,
-      types: PokemonTypesMapper.fromJson(json['types'] as Map<String, dynamic>),
+      types: PokemonTypesMapper.fromJson(json),
       sprites: PokemonSpritesMapper.fromJson(json['sprites'] as Map<String, dynamic>),
     );
   }
