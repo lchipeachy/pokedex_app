@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
 import 'package:pokedex_app/features/domain/entities/pokemon_entity.dart';
 import 'package:pokedex_app/features/presentation/providers/pokemon_provider.dart';
-import 'package:pokedex_app/features/presentation/widgets/loading_widget.dart';
+import 'package:pokedex_app/features/shared/widgets/loading_widget.dart';
 import 'package:pokedex_app/features/presentation/widgets/pokemon_card.dart';
 import 'package:pokedex_app/features/presentation/widgets/search_bar_widget.dart';
 import 'package:pokedex_app/features/presentation/widgets/filter_button_widget.dart';
@@ -37,6 +37,7 @@ class _PokemonListScreenState extends ConsumerState<PokemonListScreen> {
 
   Future <void> getPokemonList() async{
     await ref.read(pokemonProvider.notifier).getPokemonList();
+    
     final pokemonList = ref.read(pokemonProvider).pokemonList;
     debugPrint('$pokemonList');
   }
