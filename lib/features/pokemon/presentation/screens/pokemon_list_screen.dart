@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
 import 'package:pokedex_app/features/pokemon/domain/entities/pokemon_entity.dart';
-import 'package:pokedex_app/features/pokemon/presentation/providers/pokemon_provider.dart';
+import 'package:pokedex_app/features/pokemon/presentation/providers/pokemons/pokemon_provider.dart';
 import 'package:pokedex_app/features/shared/providers/loading/loading_provider.dart';
 import 'package:pokedex_app/features/pokemon/presentation/widgets/pokemon_card.dart';
 import 'package:pokedex_app/features/pokemon/presentation/widgets/search_bar_widget.dart';

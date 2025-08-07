@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pokedex_app/features/pokemon/domain/repositories/pokemon_repository.dart';
-import 'package:pokedex_app/features/pokemon/presentation/providers/pokemon_state.dart';
+import 'package:pokedex_app/features/pokemon/presentation/providers/pokemons/pokemon_state.dart';
 
 class PokemonNotifier extends StateNotifier <PokemonState>{
   final PokemonRepository repository;
