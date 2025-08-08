@@ -19,6 +19,8 @@ class PokemonTypeChip extends StatelessWidget {
         return 'venenoso';
       case 'volador':
         return 'volador';
+      case 'bicho':
+        return 'bicho';
       default:
         return 'normal'; 
     }
@@ -38,6 +40,8 @@ class PokemonTypeChip extends StatelessWidget {
         return const Color(0xFFB567CE);
       case 'volador':
         return const Color(0xFF89AAE3);
+      case 'bicho':
+        return const Color(0xFF91C12F);
       default:
         return const Color(0xFF919AA2);
     }
