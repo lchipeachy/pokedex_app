@@ -53,6 +53,7 @@ class PokedexBottomNavbar extends StatelessWidget {
 
   int _calculateSelectedIndex(String location) {
     if (location == '/') return 0;
+    if (location == '/favorites') return 2;
     return 0; 
   } 
 

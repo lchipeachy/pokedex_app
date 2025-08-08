@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pokedex_app/features/pokemon/domain/entities/pokemon_service_entity.dart';
+import 'package:pokedex_app/features/pokemon/presentation/providers/favorite_pokemons/favorites_provider.dart';
 import 'package:pokedex_app/features/pokemon/presentation/widgets/pokemon_type_chip.dart';
 
-class PokemonCard extends StatefulWidget {
+class PokemonCard extends ConsumerStatefulWidget{
   final PokemonServiceEntity pokemon;  
   const PokemonCard({super.key, required this.pokemon});
 
   @override
-  State<PokemonCard> createState() => _PokemonCardState();
+  ConsumerState<PokemonCard> createState() => PokemonCardState();
 }
 
-class _PokemonCardState extends State<PokemonCard> {
-  bool isFavorite = false;
+class PokemonCardState extends ConsumerState<PokemonCard> {
 
   String get _primaryType{
     if(widget.pokemon.types.types.isEmpty) return 'normal';
@@ -96,6 +97,8 @@ class _PokemonCardState extends State<PokemonCard> {
   Widget build(BuildContext context) {
     final textStyle = Theme.of(context).textTheme;
     final pokemon = widget.pokemon;
+
+    final isFavorite = ref.watch(isFavoriteProvider(pokemon.id));
   
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -159,7 +162,7 @@ class _PokemonCardState extends State<PokemonCard> {
                       children: [
                         Positioned.fill(
                           child: SvgPicture.asset(
-                            'assets/pokemons_types/${_getIconType(_primaryType)}.svg'
+                            'assets/pokemons_types/${_tralateType(_primaryType)}.svg'
                           ),
                         ),
                         Center(
@@ -176,10 +179,17 @@ class _PokemonCardState extends State<PokemonCard> {
                     top: 6,
                     right: 8,
                     child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          isFavorite = !isFavorite;
-                        });
+                      onTap: () async {
+                        await ref.read(favoritesProvider.notifier).toggleFavorites(pokemon.id);
+
+                        if(!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: 
+                          Text(
+                            isFavorite
+                            ? '${pokemon.name} eliminado de favoritos'
+                            : '${pokemon.name} agregado a favoritos',
+                          ),
+                        ));
                       },
                       child: Container(
                         width: 32,
