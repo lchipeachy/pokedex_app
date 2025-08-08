@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:pokedex_app/features/pokemon/domain/entities/pokemon_service_entity.dart';
 import 'package:pokedex_app/features/pokemon/presentation/providers/favorite_pokemons/favorites_provider.dart';
 import 'package:pokedex_app/features/pokemon/presentation/widgets/pokemon_type_chip.dart';
@@ -18,7 +19,6 @@ class PokemonCardState extends ConsumerState<PokemonCard> {
   String get _primaryType{
     if(widget.pokemon.types.types.isEmpty) return 'normal';
     return widget.pokemon.types.types.first.type.name;
-    
   }
 
   String get _pokemonImage {
@@ -100,122 +100,127 @@ class PokemonCardState extends ConsumerState<PokemonCard> {
 
     final isFavorite = ref.watch(isFavoriteProvider(pokemon.id));
   
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: _getBackgroundColor(_tralateType(_primaryType)),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 12),
-                    Text(
-                      'N°${pokemon.id}',
-                      style: textStyle.bodyMedium?.copyWith(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold
+    return GestureDetector(
+      onTap: () {
+        context.pushNamed('detail', extra: pokemon);
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(
+          color: _getBackgroundColor(_tralateType(_primaryType)),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 12),
+                      Text(
+                        'N°${pokemon.id}',
+                        style: textStyle.bodyMedium?.copyWith(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      pokemon.name,
-                      style: textStyle.bodyMedium?.copyWith(
-                        fontSize: 21,
-                        fontWeight: FontWeight.bold
+                      const SizedBox(height: 4),
+                      Text(
+                        pokemon.name,
+                        style: textStyle.bodyMedium?.copyWith(
+                          fontSize: 21,
+                          fontWeight: FontWeight.bold
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 4,
-                      children: pokemon.types.types.map((typeSlot) {
-                        return PokemonTypeChip(
-                          type: _tralateType(typeSlot.type.name),
-                        );
-                      }).toList()
-                    ),
-                    const SizedBox(height: 14),
-                  ],
+                      const SizedBox(height: 12),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 4,
+                        children: pokemon.types.types.map((typeSlot) {
+                          return PokemonTypeChip(
+                            type: _tralateType(typeSlot.type.name),
+                          );
+                        }).toList()
+                      ),
+                      const SizedBox(height: 14),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Stack(
-                children: [
-                  Container(
-                    height: 100,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: _getPrincipalColor(_tralateType(_primaryType)),
-                    ),
-                    child: Stack(
-                      children: [
-                        Positioned.fill(
-                          child: SvgPicture.asset(
-                            'assets/pokemons_types/${_tralateType(_primaryType)}.svg'
+              Expanded(
+                flex: 1,
+                child: Stack(
+                  children: [
+                    Container(
+                      height: 100,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: _getPrincipalColor(_tralateType(_primaryType)),
+                      ),
+                      child: Stack(
+                        children: [
+                          Positioned.fill(
+                            child: SvgPicture.asset(
+                              'assets/pokemons_types/${_tralateType(_primaryType)}.svg'
+                            ),
                           ),
-                        ),
-                        Center(
-                          child: Image.network(
-                            _pokemonImage, 
-                            height: 94, 
-                            width: 94
+                          Center(
+                            child: Image.network(
+                              _pokemonImage, 
+                              height: 94, 
+                              width: 94
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  Positioned(
-                    top: 6,
-                    right: 8,
-                    child: GestureDetector(
-                      onTap: () async {
-                        await ref.read(favoritesProvider.notifier).toggleFavorites(pokemon.id);
+                    Positioned(
+                      top: 6,
+                      right: 8,
+                      child: GestureDetector(
+                        onTap: () async {
+                          await ref.read(favoritesProvider.notifier).toggleFavorites(pokemon.id);
 
-                        if(!context.mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: 
-                          Text(
-                            isFavorite
-                            ? '${pokemon.name} eliminado de favoritos'
-                            : '${pokemon.name} agregado a favoritos',
+                          if(!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: 
+                            Text(
+                              isFavorite
+                              ? '${pokemon.name} eliminado de favoritos'
+                              : '${pokemon.name} agregado a favoritos',
+                            ),
+                          ));
+                        },
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.3),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 2,
+                            ),
                           ),
-                        ));
-                      },
-                      child: Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.3),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.white,
-                            width: 2,
-                          ),
-                        ),
-                        child: Center(
-                          child: Icon(
-                            isFavorite ? Icons.favorite : Icons.favorite_border, 
-                            color: isFavorite ? Colors.red : Colors.white,
-                            size: 16,
+                          child: Center(
+                            child: Icon(
+                              isFavorite ? Icons.favorite : Icons.favorite_border, 
+                              color: isFavorite ? Colors.red : Colors.white,
+                              size: 16,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            )
-          ],
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

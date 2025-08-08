@@ -1,14 +1,20 @@
 import 'package:pokedex_app/features/pokemon/domain/entities/pokemon_service_entity.dart';
 import 'package:pokedex_app/features/pokemon/infraestructure/mappers/types/pokemon_types_mapper.dart';
 import 'package:pokedex_app/features/pokemon/infraestructure/mappers/sprites/pokemon_sprites_mapper.dart';
+import 'package:pokedex_app/features/pokemon/infraestructure/mappers/abilities/pokemon_abilities_mapper.dart';
+import 'package:pokedex_app/features/pokemon/infraestructure/mappers/stats/pokemon_stats_mapper.dart';
 
 class PokemonServiceMapper {
   static PokemonServiceEntity fromJson(Map<String, dynamic> json) {
     return PokemonServiceEntity(
       id: json['id'] as int,
       name: json['name'] as String,
+      height: json['height'] as int? ?? 0,
+      weight: json['weight'] as int? ?? 0,
       types: PokemonTypesMapper.fromJson(json),
       sprites: PokemonSpritesMapper.fromJson(json['sprites'] as Map<String, dynamic>),
+      abilities: PokemonAbilitiesMapper.fromJson(json),
+      stats: PokemonStatsMapper.fromJson(json),
     );
   }
 
@@ -16,8 +22,12 @@ class PokemonServiceMapper {
     return {
       'id': entity.id,
       'name': entity.name,
+      'height': entity.height,
+      'weight': entity.weight,
       'types': PokemonTypesMapper.toJson(entity.types),
       'sprites': PokemonSpritesMapper.toJson(entity.sprites),
+      'abilities': entity.abilities,
+      'stats': entity.stats,
     };
   }
 }
